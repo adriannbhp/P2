@@ -14,6 +14,7 @@ app.use(
       origin: [
         "https://front-end-proyek-3.vercel.app", // URL frontend Anda
         "https://proyek-3-api.vercel.app", // URL endpoint API yang perlu diakses
+        "http://localhost:8000",
       ],
       credentials: true, // Mengizinkan cookie dan header autentikasi
       methods: ["GET", "POST", "PUT", "DELETE"], // Metode HTTP yang diizinkan
