@@ -18,9 +18,11 @@ app.use(
       ],
       credentials: true, // Mengizinkan cookie dan header autentikasi
       methods: ["GET", "POST", "PUT", "DELETE"], // Metode HTTP yang diizinkan
-      allowedHeaders: ["Content-Type", "Authorization"], // Header yang diizinkan
+      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // Tambahkan header yang diperlukan
     })
 );
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -46,16 +48,16 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:8000", // Update URL sesuai dengan lingkungan lokal Anda
+        url: "http://localhost:8000", // Swagger UI di localhost
         description: "Local Server",
       },
       {
-        url: "https://proyek-3-api.vercel.app", // Update URL untuk environment production
+        url: "https://proyek-3-api.vercel.app", // API production
         description: "Production Server",
       },
     ],
   },
-  apis: ["./controller/*.js"], // Path ke file controller untuk dokumentasi API
+  apis: ["./controller/*.js"],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
