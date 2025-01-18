@@ -11,6 +11,74 @@ const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 // create user
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Auto-generated ID of the user
+ *         name:
+ *           type: string
+ *           description: User's name
+ *         email:
+ *           type: string
+ *           description: User's email
+ *         password:
+ *           type: string
+ *           description: User's password
+ *         avatar:
+ *           type: object
+ *           properties:
+ *             public_id:
+ *               type: string
+ *             url:
+ *               type: string
+ *       example:
+ *         name: John Doe
+ *         email: john.doe@example.com
+ *         password: password123
+ */
+
+
+/**
+ * @swagger
+ * /api/v2/user/create-user:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       400:
+ *         description: Bad request, user already exists
+ */
+
+
 router.post("/create-user", async (req, res, next) => {
   try {
     const { name, email, password, avatar } = req.body;
@@ -56,6 +124,29 @@ router.post("/create-user", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/activation:
+ *   post:
+ *     summary: Activate a user account
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activation_token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User activated successfully
+ *       400:
+ *         description: Invalid token
+ */
+
+
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
@@ -98,6 +189,33 @@ router.post(
     }
   })
 );
+
+
+/**
+ * @swagger
+ * /api/v2/user/login-user:
+ *   post:
+ *     summary: Login user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: User's email
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ *       400:
+ *         description: Invalid email or password
+ */
 
 // login user
 router.post(
@@ -154,6 +272,18 @@ router.get(
 );
 
 // log out user
+
+/**
+ * @swagger
+ * /api/logout:
+ *   get:
+ *     summary: Logout user
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
+
 router.get(
   "/logout",
   catchAsyncErrors(async (req, res, next) => {
@@ -175,6 +305,35 @@ router.get(
 );
 
 // update user info
+
+/**
+ * @swagger
+ * /api/update-user-info:
+ *   put:
+ *     summary: Update user information
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User information updated successfully
+ *       400:
+ *         description: Invalid credentials
+ */
+
 router.put(
   "/update-user-info",
   isAuthenticated,

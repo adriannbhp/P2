@@ -9,10 +9,17 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const app = express();
 
 // CORS configuration
-app.use(cors({
-  origin: ['https://front-end-proyek-3.vercel.app'], // Update dengan URL frontend Anda
-  credentials: true,
-}));
+app.use(
+    cors({
+      origin: [
+        "https://front-end-proyek-3.vercel.app", // URL frontend Anda
+        "https://proyek-3-api.vercel.app", // URL endpoint API yang perlu diakses
+      ],
+      credentials: true, // Mengizinkan cookie dan header autentikasi
+      methods: ["GET", "POST", "PUT", "DELETE"], // Metode HTTP yang diizinkan
+      allowedHeaders: ["Content-Type", "Authorization"], // Header yang diizinkan
+    })
+);
 
 app.use(express.json());
 app.use(cookieParser());
