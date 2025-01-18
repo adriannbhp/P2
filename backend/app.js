@@ -31,19 +31,15 @@ const swaggerOptions = {
       title: "Express API Documentation",
       version: "1.0.0",
       description: "API documentation for the Express.js application",
-      contact: {
-        name: "Developer Name",
-        email: "developer@example.com",
-      },
     },
     servers: [
       {
-        url: "https://proyek-3-api.vercel.app", // Update with your server's base URL
-        description: "Development Server",
+        url: "https://proyek-3-api.vercel.app", // Ganti dengan URL Vercel Anda
+        description: "Production Server",
       },
     ],
   },
-  apis: ["./controller/*.js"], // Path to your API documentation comments
+  apis: ["./controller/*.js"], // Pastikan path ini benar
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
