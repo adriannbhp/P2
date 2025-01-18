@@ -1,31 +1,62 @@
 const express = require("express");
 const ErrorHandler = require("./middleware/error");
-const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express"); // Import Swagger
+const swaggerJsDoc = require("swagger-jsdoc"); // Import Swagger JSDoc for configuration
 
+const app = express();
+
+// CORS configuration
 app.use(cors({
-  origin: ['https://front-end-proyek-3.vercel.app',],
-  credentials: true
+  origin: ['https://front-end-proyek-3.vercel.app'],
+  credentials: true,
 }));
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true, limit: "700mb" }));
+
+// Test Route
 app.use("/test", (req, res) => {
   res.send("Hello world!");
 });
 
-app.use(bodyParser.urlencoded({ extended: true, limit: "700mb" }));
+// Swagger Configuration
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Express API Documentation",
+      version: "1.0.0",
+      description: "API documentation for the Express.js application",
+      contact: {
+        name: "Developer Name",
+        email: "developer@example.com",
+      },
+    },
+    servers: [
+      {
+        url: "https://proyek-3-api.vercel.app", // Update with your server's base URL
+        description: "Development Server",
+      },
+    ],
+  },
+  apis: ["./controller/*.js"], // Path to your API documentation comments
+};
 
-// config
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Environment Configuration
 if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({
     path: "config/.env",
   });
 }
 
-// import routes
+// Import Routes
 const user = require("./controller/user");
 const shop = require("./controller/shop");
 const product = require("./controller/product");
@@ -48,7 +79,7 @@ app.use("/api/v2/coupon", coupon);
 app.use("/api/v2/payment", payment);
 app.use("/api/v2/withdraw", withdraw);
 
-// it's for ErrorHandling
+// Error Handling Middleware
 app.use(ErrorHandler);
 
 module.exports = app;
