@@ -3,14 +3,14 @@ const ErrorHandler = require("./middleware/error");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const swaggerUi = require("swagger-ui-express"); // Import Swagger
-const swaggerJsDoc = require("swagger-jsdoc"); // Import Swagger JSDoc for configuration
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
 
 const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://front-end-proyek-3.vercel.app'],
+  origin: ['https://front-end-proyek-3.vercel.app'], // Update dengan URL frontend Anda
   credentials: true,
 }));
 
@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "700mb" }));
 
 // Test Route
-app.use("/test", (req, res) => {
+app.get("/test", (req, res) => {
   res.send("Hello world!");
 });
 
@@ -31,19 +31,32 @@ const swaggerOptions = {
       title: "Express API Documentation",
       version: "1.0.0",
       description: "API documentation for the Express.js application",
+      contact: {
+        name: "Developer Name",
+        email: "developer@example.com",
+      },
     },
     servers: [
       {
-        url: "https://proyek-3-api.vercel.app", // Ganti dengan URL Vercel Anda
+        url: "http://localhost:8000", // Update URL sesuai dengan lingkungan lokal Anda
+        description: "Local Server",
+      },
+      {
+        url: "https://proyek-3-api.vercel.app", // Update URL untuk environment production
         description: "Production Server",
       },
     ],
   },
-  apis: ["./controller/*.js"], // Pastikan path ini benar
+  apis: ["./controller/*.js"], // Path ke file controller untuk dokumentasi API
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Swagger Middleware
+app.use("/api-docs", (req, res, next) => {
+  console.log("Swagger UI requested:", req.url); // Debug log
+  next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Environment Configuration
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -77,5 +90,14 @@ app.use("/api/v2/withdraw", withdraw);
 
 // Error Handling Middleware
 app.use(ErrorHandler);
+
+// Serve Frontend in Production
+if (process.env.NODE_ENV === "PRODUCTION") {
+  const path = require("path");
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+  });
+}
 
 module.exports = app;
